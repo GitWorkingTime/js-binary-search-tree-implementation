@@ -12,7 +12,7 @@ class Tree {
     }
 
     buildTree(array) {
-        let sorted = array.sort();
+        let sorted = array.sort((a, b) => a - b);
         this.root = this.sortedArrayToBST(sorted, 0, sorted.length - 1);
         return this;
     }
@@ -31,7 +31,30 @@ class Tree {
     }
 
     insert(value) {
-        
+        this.insertValue(value, this.root);
+    }
+
+    // Helper Function
+    insertValue(value, parent) {
+        if(parent.value === value) {
+            return null;
+        } else {
+            if(parent.value < value) {
+                if (parent.right !== null) {
+                    return this.compare(value, parent.right);
+                } else {
+                    let node = new Node(value);
+                    parent.right = node;
+                }
+            } else if(parent.value > value){
+                if (parent.left !== null) {
+                    return this.compare(value, parent.left);
+                } else {
+                    let node = new Node(value);
+                    parent.left = node;
+                }
+            }
+        }
     }
 
     deleteItem(value) {
@@ -39,7 +62,21 @@ class Tree {
     }
 
     find(value) {
+        return this.traverseFind(value, this.root);
+    }
 
+    traverseFind(value, parent) {
+        if (parent === null) {
+            return null;
+        } else if (parent.value === value) {
+            return parent;
+        } else {
+            if (parent.value < value) {
+                return this.traverseFind(value, parent.right);
+            } else {
+                return this.traverseFind(value, parent.left);
+            }
+        }
     }
 
     levelOrderForEach(callback) {
@@ -83,8 +120,14 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   if (node.right !== null) {
     prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
   }
-  console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
+  console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.value}`);
   if (node.left !== null) {
     prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
   }
 };
+
+let tree = new Tree();
+let arr = [5, 4, 3, 2, 1, 6, 8, -1, -5, -3, 10, 19];
+tree.buildTree(arr);
+prettyPrint(tree.root);
+console.log(tree.find(2))
