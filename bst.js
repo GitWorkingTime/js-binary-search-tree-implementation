@@ -12,11 +12,26 @@ class Tree {
     }
 
     buildTree(array) {
+        let sorted = array.sort();
+        this.root = this.sortedArrayToBST(sorted, 0, sorted.length - 1);
+        return this;
+    }
 
+    // Helper Function
+    sortedArrayToBST(arr, start, end) {
+        if (start > end) return null;
+
+        const mid = Math.floor((start + end) / 2);
+        const node = new Node(arr[mid]);
+
+        node.left = this.sortedArrayToBST(arr, start, mid - 1);
+        node.right = this.sortedArrayToBST(arr, mid + 1, end);
+
+        return node;
     }
 
     insert(value) {
-
+        
     }
 
     deleteItem(value) {
@@ -56,7 +71,7 @@ class Tree {
     }
 
     rebalance() {
-        
+
     }
 }
 
@@ -73,4 +88,3 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
     prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
   }
 };
-
