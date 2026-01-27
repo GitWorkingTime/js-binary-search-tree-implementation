@@ -58,7 +58,40 @@ class Tree {
     }
 
     deleteItem(value) {
+        this.root = this.deleteNode(this.root, value);
+    }
 
+    deleteNode(parent, value) {
+        if(parent === null) {
+            return parent;
+        }
+
+        if(value < parent.value) {
+            parent.left = this.deleteNode(parent.left, value);
+        } else if(value > parent.value) {
+            parent.right = this.deleteNode(parent.right, value);
+        } else {
+            if(!parent.left && !parent.right) {
+                return null;
+            }
+            if(!parent.left) {
+                return parent.right;
+            } else if (!parent.right) {
+                return parent.left;
+            }
+
+            parent.value = this.min(parent.right);
+            parent.right = this.deleteNode(parent.right, parent.value);
+        }
+        return parent;
+    }
+
+    min(parent) {
+        if(!parent.left) {
+            return parent.value;
+        } else {
+            return this.min(parent.left);
+        }
     }
 
     find(value) {
@@ -131,3 +164,5 @@ let arr = [5, 4, 3, 2, 1, 6, 8, -1, -5, -3, 10, 19];
 tree.buildTree(arr);
 prettyPrint(tree.root);
 console.log(tree.find(2))
+tree.deleteItem(3)
+prettyPrint(tree.root)
