@@ -113,8 +113,26 @@ class Tree {
     }
 
     levelOrderForEach(callback) {
-
+        let queue = []
+        return this.levelOrderTraversal(this.root, callback, queue)
     }
+
+    levelOrderTraversal(node, callback, queue) {
+        if (!node) {
+            return;
+        }
+
+        callback(node);
+
+        if (node.left) {
+            queue.push(node.left);
+        }
+        if (node.right) {
+            queue.push(node.right);
+        }
+        return this.levelOrderTraversal(queue.shift(), callback, queue);
+    }
+
 
     inOrderForEach(callback) {
         
@@ -160,9 +178,8 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 };
 
 let tree = new Tree();
-let arr = [5, 4, 3, 2, 1, 6, 8, -1, -5, -3, 10, 19];
+let arr = [1, 2, 3, 4, 5, 6, 7];
 tree.buildTree(arr);
 prettyPrint(tree.root);
-console.log(tree.find(2))
-tree.deleteItem(3)
-prettyPrint(tree.root)
+
+tree.levelOrderForEach((node) => {console.log(node.value)});
