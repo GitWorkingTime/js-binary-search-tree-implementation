@@ -113,6 +113,10 @@ class Tree {
     }
 
     levelOrderForEach(callback) {
+        if(!callback || typeof callback !== 'function') {
+            throw new Error('Invalid Arg: requires callback function');
+        }
+
         let queue = []
         return this.levelOrderTraversal(this.root, callback, queue)
     }
@@ -133,34 +137,118 @@ class Tree {
         return this.levelOrderTraversal(queue.shift(), callback, queue);
     }
 
-
     inOrderForEach(callback) {
+        if(!callback || typeof callback !== 'function') {
+            throw new Error('Invalid Arg: requires callback');
+        }
+        return this.inOrderTraversal(this.root, callback);
+    }
+
+    inOrderTraversal(node, callback) {
+        if (!node) {
+            return;
+        }
         
+        this.inOrderTraversal(node.left, callback);
+        callback(node);
+        this.inOrderTraversal(node.right, callback);
     }
 
     preOrderForEach(callback) {
+        if(!callback || typeof callback !== 'function') {
+            throw new Error('Invalid Arg: requires callback');
+        }
+        return this.preOrderTraversal(this.root, callback);
+    }
+
+    preOrderTraversal(node, callback) {
+        if (!node) {
+            return;
+        }
         
+        callback(node);
+        this.preOrderTraversal(node.left, callback);
+        this.preOrderTraversal(node.right, callback);
     }
 
     postOrderForEach(callback) {
+        if(!callback || typeof callback !== 'function') {
+            throw new Error('Invalid Arg: requires callback');
+        }
+        return this.postOrderTraversal(this.root, callback);
+    }
+
+    postOrderTraversal(node, callback) {
+        if (!node) {
+            return;
+        }
         
+        this.postOrderTraversal(node.left, callback);
+        this.postOrderTraversal(node.right, callback);
+        callback(node);
     }
 
-    height(value) {
-
+    height(node) {
+        // If called with a value, find the node first
+        if (typeof node === 'number') {
+            node = this.find(node);
+        }
+        // If no argument, use root
+        if (node === undefined) {
+            node = this.root;
+        }
+        
+        if (node === null) {
+            return -1;
+        }
+        
+        const leftHeight = this.height(node.left);
+        const rightHeight = this.height(node.right);
+        
+        return Math.max(leftHeight, rightHeight) + 1;
     }
 
-    depth(value) {
-
-    }
-
-    isBalanced() {
-
+    isBalanced(node = this.root) {
+        if (node === null) {
+            return true;
+        }
+        
+        const leftHeight = this.height(node.left);
+        const rightHeight = this.height(node.right);
+        
+        const heightDiff = Math.abs(leftHeight - rightHeight);
+        
+        return heightDiff <= 1 && 
+            this.isBalanced(node.left) && 
+            this.isBalanced(node.right);
     }
 
     rebalance() {
-
+        // Collect all values using in-order traversal
+        const values = [];
+        this.inOrderForEach((node) => values.push(node.value));
+        
+        // Rebuild tree from sorted array
+        this.root = this.sortedArrayToBST(values, 0, values.length - 1);
     }
+    
+    depth(value) {
+        return this.traverseFindCount(value, this.root);
+    }
+    
+    traverseFindCount(value, parent, count = 0) {
+        if (parent === null) {
+            return null;
+        } else if (parent.value === value) {
+            return count;
+        } else {
+            if (parent.value < value) {
+                return this.traverseFind(value, parent.right, ++count);
+            } else {
+                return this.traverseFind(value, parent.left, ++count);
+            }
+        }
+    }    
 }
 
 // Helper Function for printing
